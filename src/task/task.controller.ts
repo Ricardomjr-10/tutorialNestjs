@@ -1,11 +1,15 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { TaskDto } from './task.dto';
+import { TaskService } from './task.service';
 
 @Controller('task')
 export class TaskController {
+  constructor(private readonly taskService: TaskService) {} //importar task service
+
   @Post()
   create(@Body() task: TaskDto) {
     //pegar os dados da dto
+    this.taskService.create(task);
     console.log(task);
   }
 }
