@@ -14,6 +14,6 @@ export class TaskController {
 
   @Get('/:id')
   findById(@Param('id') id: string) {
-    console.log(id);
+    return this.taskService.findById(id);
   }
 }
