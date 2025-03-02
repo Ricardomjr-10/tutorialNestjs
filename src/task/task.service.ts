@@ -26,11 +26,11 @@ export class TaskService {
     return this.tasks.filter((t) => {
       let match = true;
 
-      if (params.title != undefined && t.title !== params.title) {
+      if (params.title != undefined && t.title.includes(params.title)) {
         match = false;
       }
 
-      if (params.status != undefined && t.status !== params.status) {
+      if (params.status != undefined && t.status.includes(params.status)) {
         match = false;
       }
       return match;
