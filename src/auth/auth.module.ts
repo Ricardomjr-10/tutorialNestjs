@@ -10,7 +10,7 @@ import { UsersModule } from 'src/users/users.module';
     JwtModule.registerAsync({
       global: true,
       imports: [],
-      useFactory: async (confingService: ConfigService) => ({
+      useFactory: (confingService: ConfigService) => ({
         secret: confingService.get<string>('JWT_SECRET'),
         signOptions: {
           expiresIn: +confingService.get('JWT_EXPIRATION_TIME'), // O + É PRA CONVERTER PRA NUMBER
