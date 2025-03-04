@@ -17,6 +17,7 @@ export enum TaskStatusEnum {
 
 export class TaskDto {
   @IsUUID()
+  @IsOptional()
   id: string;
 
   @IsString()
