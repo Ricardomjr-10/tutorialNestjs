@@ -3,7 +3,6 @@
 /node_modules
 /build
 
-src/db/db.module.ts
 # Logs
 logs
 *.log
