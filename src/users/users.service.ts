@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { UserDto } from './user.dto';
 import { v4 as uuid } from 'uuid'; //biblioteca criar id automatico uuid
 import { hashSync as bcryptHashSync } from 'bcrypt'; //biblioteca de senha bcrypt
@@ -13,15 +13,36 @@ export class UsersService {
     private readonly usersRepository: Repository<UserEntity>,
   ) {}
 
-  private readonly users: UserDto[] = [];
+  async create(newUser: UserDto) {
+    const userAlreadyRegistered = await this.findByUserName(newUser.username);
 
-  create(newUser: UserDto) {
-    newUser.id = uuid();
-    newUser.password = bcryptHashSync(newUser.password, 10);
-    this.users.push(newUser);
+    if (userAlreadyRegistered) {
+      throw new ConflictException(
+        `User '${newUser.username}' already registered`,
+      );
+    }
+
+    const dbUser = new UserEntity();
+    dbUser.username = newUser.username;
+    dbUser.passwordHash = bcryptHashSync(newUser.password, 10);
+
+    const { id, username } = await this.usersRepository.save(dbUser);
+
+    return { id, username };
   }
 
-  findByUserName(username: string): UserDto | null {
-    return this.users.find((user) => user.username === username) ?? null;
+  async findByUserName(username: string): Promise<UserDto | null> {
+    const userFound = await this.usersRepository.findOne({
+      where: { username },
+    });
+
+    if (!userFound) {
+      null;
+    }
+
+    return {
+      id: userFound.id,
+      username: userFound?.passwordHash,
+    };
   }
 }
