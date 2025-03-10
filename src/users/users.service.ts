@@ -1,6 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { UserDto } from './user.dto';
-import { v4 as uuid } from 'uuid'; //biblioteca criar id automatico uuid
 import { hashSync as bcryptHashSync } from 'bcrypt'; //biblioteca de senha bcrypt
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/db/entities/user.entity';
@@ -37,12 +36,13 @@ export class UsersService {
     });
 
     if (!userFound) {
-      null;
+      return null;
     }
 
     return {
       id: userFound.id,
-      username: userFound?.passwordHash,
+      username: userFound.username,
+      password: userFound.passwordHash,
     };
   }
 }
