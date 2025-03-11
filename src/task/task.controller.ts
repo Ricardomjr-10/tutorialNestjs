@@ -19,9 +19,9 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {} //importar task service
 
   @Post()
-  create(@Body() task: TaskDto) {
+  async create(@Body() task: TaskDto) {
     //pegar os dados da dto
-    this.taskService.create(task);
+    await this.taskService.create(task);
   }
 
   @Get('/:id')
