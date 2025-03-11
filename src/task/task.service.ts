@@ -57,32 +57,28 @@ export class TaskService {
     return tasksFound.map((taskEntity) => this.mapEntityToDto(taskEntity));
   }
 
-  update(task: TaskDto) {
-    const taskIndex = this.tasks.findIndex((t) => t.id === task.id);
+  async update(id: string, task: TaskDto) {
+    const foundTask = await this.taskRepository.findOne({ where: { id } });
 
-    if (taskIndex >= 0) {
-      this.tasks[taskIndex] = task;
-      return;
+    if (!foundTask) {
+      throw new HttpException(
+        `Task with id ${task.id} not found`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
-    throw new HttpException(
-      `Task with id ${task.id} not found`,
-      HttpStatus.BAD_REQUEST,
-    );
+    await this.taskRepository.update(id, this.mapDtoToEntity(task));
   }
 
-  remove(id: string) {
-    const taskIndex = this.tasks.findIndex((t) => t.id === id);
+  async remove(id: string) {
+    const result = await this.taskRepository.delete(id);
 
-    if (taskIndex >= 0) {
-      this.tasks.splice(taskIndex, 1);
-      return;
+    if (!result.affected) {
+      throw new HttpException(
+        `Task with id ${id} not found`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
-
-    throw new HttpException(
-      `Task with id ${id} not found`,
-      HttpStatus.BAD_REQUEST,
-    );
   }
 
   private mapEntityToDto(taskEntity: TaskEntity): TaskDto {
@@ -93,6 +89,15 @@ export class TaskService {
       expirationDate: taskEntity.expirationDate,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       status: TaskStatusEnum[taskEntity.status],
+    };
+  }
+
+  private mapDtoToEntity(taskDto: TaskDto): Partial<TaskEntity> {
+    return {
+      title: taskDto.title,
+      description: taskDto.description,
+      expirationDate: taskDto.expirationDate,
+      status: taskDto.status.toString(),
     };
   }
 }

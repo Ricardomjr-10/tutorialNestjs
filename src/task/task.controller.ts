@@ -35,8 +35,8 @@ export class TaskController {
   }
 
   @Put('/:id')
-  update(@Param() params: TaskRoutePatameters, @Body() task: TaskDto) {
-    this.taskService.update(task);
+  async update(@Param() params: TaskRoutePatameters, @Body() task: TaskDto) {
+    await this.taskService.update(params.id, task);
   }
 
   @Delete('/:id')
