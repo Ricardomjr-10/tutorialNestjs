@@ -1,29 +1,27 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { FindAllParameters, TaskDto, TaskStatusEnum } from './task.dto';
-import { v4 as uuid } from 'uuid';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskEntity } from 'src/db/entities/task.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class TaskService {
-
-constructor(
-  @InjectRepository(TaskEntity)
+  constructor(
+    @InjectRepository(TaskEntity)
     private readonly taskRepository: Repository<TaskEntity>,
-) {}
+  ) {}
 
   private tasks: TaskDto[] = [];
 
   async create(task: TaskDto) {
-   const taskToSave: TaskEntity = {
-    title: task.title,
-    description: task.description,
-    expirationDate: task.expirationDate,
-    status: TaskStatusEnum.TO_DO
-   }
+    const taskToSave: TaskEntity = {
+      title: task.title,
+      description: task.description,
+      expirationDate: task.expirationDate,
+      status: TaskStatusEnum.TO_DO,
+    };
 
-   const createdTask = await this.taskRepository.save(taskToSave);
+    const createdTask = await this.taskRepository.save(taskToSave);
 
     return this.mapEntityToDto(createdTask);
   }
@@ -90,7 +88,8 @@ constructor(
       title: taskEntity.title,
       description: taskEntity.description,
       expirationDate: taskEntity.expirationDate,
-      status: TaskStatusEnum[taskEntity.status]
-    }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      status: TaskStatusEnum[taskEntity.status],
+    };
   }
 }
